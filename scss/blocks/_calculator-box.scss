@@ -1,0 +1,16 @@
+.calculator-box__calculation-result {
+  background-color: #ccc;
+  padding: {
+    top: 6px;
+    bottom: 6px;
+    left: 12px;
+    right: 12px;
+  }
+  user-select: none;
+  overflow-y: auto;
+  white-space: nowrap;
+}
+
+.calculator-box__calculation-result-value {
+  font-size: 24px;
+}

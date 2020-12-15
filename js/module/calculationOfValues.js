@@ -1,0 +1,83 @@
+export function calculationOfValues(evt) {
+  evt.preventDefault();
+
+  elErrorBox.innerHTML = '';
+
+  // ikkita inputga ham ma'lumot kiritilmaslik, yoki ma'lumotlar local storageda bo'lsayu uni inputlardan ongli ravishda o'chirib ishlatish holati uchun foydalanuvchiga habar yuborish sharti
+  if(elFirstOperandInput.value.trim() === '' && elSecondOperandInput.value.trim() === '') {
+    generatingError('operandsAreNotIncluded', elErrorBox);
+    elCalculationResult.innerHTML = '<span class="text-muted">Result</span>';
+    return;
+  }
+
+  const firstOperandInput = elFirstOperandInput.value.trim() || localStorage.getItem('firstOperandInput');
+  const secondOperandInput = elSecondOperandInput.value.trim() || localStorage.getItem('secondOperandInput');
+
+  // ikkala inputga qiymat kiritilmay qolish holati tekshirildi
+  if (firstOperandInput === '' || secondOperandInput === '' || firstOperandInput == null || secondOperandInput == null) {
+    generatingError('operandsAreNotIncluded', elErrorBox);
+    return;
+  }
+
+  // mahraj 0 bo'lib qolish holat bo'lmasligi uchun tekshiruv qo'yildi
+  if (secondOperandInput === '0' && elOperatorSelector.value === 'division') {
+    generatingError('divideByZero', elErrorBox);
+    return;
+  }
+
+  localStorage.setItem('firstOperandInput', firstOperandInput);
+  localStorage.setItem('secondOperandInput', secondOperandInput);
+
+  const operatorSelector = elOperatorSelector.value;
+  let calculationResult = 0;
+  let operatorType = '';
+
+  const calculator = new Calculation(Number(firstOperandInput), Number(secondOperandInput));
+
+  switch(operatorSelector) {
+    case 'division':
+      calculationResult = calculator.division();
+      operatorType = '/';
+      break;
+
+    case 'multiplication':
+      calculationResult = calculator.multiplication();
+      operatorType = '*';
+      break;
+
+    case 'subtraction':
+      calculationResult = calculator.subtraction();
+      operatorType = '-';
+      break;
+
+    case 'addition':
+      calculationResult = calculator.addition();
+      operatorType = '+';
+      break;
+
+    case 'modulus':
+      calculationResult = calculator.modulus();
+      operatorType = '%';
+      break;
+
+    case 'exponentiation':
+      calculationResult = calculator.exponentiation();
+      operatorType = '**';
+      break;
+
+    default:
+      elErrorMessage.textContent = 'non-existent operator selected, please select an existing operator in the list';
+      return;
+  }
+
+  elCalculationResult.innerHTML =
+  `
+    <span>${firstOperandInput} ${operatorType} ${secondOperandInput} =</span>
+    <span class="display-4 pr-3">${calculationResult.toFixed(2)}</span>
+  `;
+
+  elFirstOperandInput.value = localStorage.getItem('firstOperandInput');
+  elSecondOperandInput.value = localStorage.getItem('secondOperandInput');
+
+  elFirstOperandInput.focus();
+}
